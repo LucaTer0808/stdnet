@@ -47,7 +47,7 @@ mv ${ROOTDIR}/vsod/Easy-35 ${ROOTDIR}/vsod/DAVSOD_Test_Set_Easy_35
 ## Evaluation
 
 - Checkpoints of trained models can be found in [checkpoints](checkpoints).
-- Saliency maps or our models can be downloaded at [saliency maps]().
+- Saliency maps or our models can be downloaded at [saliency maps](https://github.com/isl-org/stdc-net/releases/download/v1.0/saliencyMaps.zip).
 
 #### SOD (SDCNet w/o Imagenet pretraining)
 ```bash
@@ -159,7 +159,7 @@ python train_vsod.py --model stdcnet --config sdcnet --resume --gpu 0,1 --datadi
 python train_vsod.py --model stdcnet --config sdcnet --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.01 --preload checkpoints/sdcnet_stage1_backbone.pth --savedir results/exp6
 ```
 
-## Test FPS
+## Testing FPS
 
 ```bash
 ## Test speed of SDCNet, SDCNet-A
