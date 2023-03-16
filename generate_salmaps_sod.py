@@ -16,7 +16,7 @@ import os
 import numpy as np
 import time
 import models
-from utils import load_checkpoint, state_from_training
+from utils import state_from_training
 
 from dataloader_sod import prepare_test_data as get_saldata
 

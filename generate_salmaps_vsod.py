@@ -16,7 +16,7 @@ import os
 import time
 import numpy as np
 import models
-from utils import load_checkpoint, state_from_training
+from utils import state_from_training
 from dataloader_vsod import prepare_test_data
 
 import torch
