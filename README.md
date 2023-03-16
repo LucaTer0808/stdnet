@@ -1,11 +1,20 @@
 # Saptial and Temporal Difference Network for Real-time salient object detection
 
+## Introduction
+Salient object detection (SOD) and Video SOD (VSOD) have benefited from recent advances in deep convolutional neural networks (CNNs). However, top-performing large-scale models require considerable computational cost, making it hard to deploy them on resource-constrained devices. In this paper, we present SDNet and STDNet, lightweight architectures for SOD and VSOD that achieve state-of-the-art results with real-time inference speeds on embedded devices. SDNet leverages pixel difference convolutions (PDC) to enrich the feature representation with image gradient information. Our proposed difference convolution reparameterization (DCR) strategy is effective in capturing the effect of multiple PDC operators at the computational cost of a single convolutional operator with no additional parameters. We additionally propose a novel spatiotemporal difference convolution (STDC) to complement standard 3D convolutions used for VSOD. STDCs similarly benefit from DCR and enable our resulting STDNet to achieve high temporal consistency in VSOD predictions. Extensive experiments on six SOD and three VSOD datasets highlight the superior accuracy-runtime trade-offs that SDNet and STDNet achieve.
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/18327074/225656444-3d51e41f-fd94-45fb-9d70-db7d1315b939.png"><br>
+</div>
+
+Coding style is based on [Pixel Difference Convolution](https://github.com/zhuoinoulu/pidinet).
 
 ## Environment
 - Ubuntu 20.04 + cuda 11.7
 - RTX 3090 x 2
-- python 3.8, pytorch 1.12, torchvision 0.13
+- python 3.8, pytorch 1.12
 
+*Other versions may also work~ :)*
 
 ## Dataset
 
@@ -21,11 +30,11 @@ mkdir ${ROOTDIR}/sod
 - Training on [DUTS-TR](http://saliencydetection.net/duts/).
 - Testing on [ECSSD](https://www.cse.cuhk.edu.hk/leojia/projects/hsaliency/dataset.html), [PASCAL-S](http://cbs.ic.gatech.edu/salobj/), [DUT-O](http://saliencydetection.net/dut-omron/), [SOD](https://www.elderlab.yorku.ca/resources/salient-objects-dataset-sod/), [HKU-IS](https://i.cs.hku.hk/~yzyu/research/deep_saliency.html), [DUTS-TE](http://saliencydetection.net/duts/).
 
-For each dataset, please put the RGB images in folder `images` and ground truth images to `GT`, root them at ${ROOTDIR}/sod.
+For each dataset, please put the RGB images in folder `images` and ground truth images in `GT` (create them if there are no such folders), root them at ${ROOTDIR}/sod.
 
 #### Download VSOD datasets
 - [DAVSOD and DAVIS](https://github.com/DengPingFan/DAVSOD)
-- VOS: [link1, where we downloaded it](https://github.com/DengPingFan/DAVSOD), or [link2](http://cvteam.net/projects/TIP18-VOS/VOS.html) (but please reorganize the files in its directory after downloading according to dataset/{train,val,test}\_video\_lst.txt)
+- VOS: [link1, where we downloaded it](https://github.com/Roudgers/DCFNet), or [link2](http://cvteam.net/projects/TIP18-VOS/VOS.html) (but please reorganize the files in its directory after downloading according to dataset/{train,val,test}\_video\_lst.txt)
 
 Remember to unzip/unrar them to ${ROOTDIR}/vsod, and change the folder name for DAVSOD with the following scripts:
 ```bash
@@ -165,3 +174,11 @@ python speed_vsod.py --model stdcneta --config baseline -j 1 --gpu 0 --size $sha
 ```
 
 ## Acknowledgement
+Repositories by which the code writing is inspired:
+
+- [PiDiNet](https://github.com/zhuoinoulu/pidinet)
+- [Evaluation-on-salient-object-detection](https://github.com/Jun-Pu/Evaluation-on-salient-object-detection)
+- [DCFNet](https://github.com/Roudgers/DCFNet)
+- [DAVSOD](https://github.com/DengPingFan/DAVSOD)
+
+Friendly colleagues at Intel Labs.
