@@ -4,7 +4,7 @@
 Salient object detection (SOD) and Video SOD (VSOD) have benefited from recent advances in deep convolutional neural networks (CNNs). However, top-performing large-scale models require considerable computational cost, making it hard to deploy them on resource-constrained devices. In this paper, we present SDNet and STDNet, lightweight architectures for SOD and VSOD that achieve state-of-the-art results with real-time inference speeds on embedded devices. SDNet leverages pixel difference convolutions (PDC) to enrich the feature representation with image gradient information. Our proposed difference convolution reparameterization (DCR) strategy is effective in capturing the effect of multiple PDC operators at the computational cost of a single convolutional operator with no additional parameters. We additionally propose a novel spatiotemporal difference convolution (STDC) to complement standard 3D convolutions used for VSOD. STDCs similarly benefit from DCR and enable our resulting STDNet to achieve high temporal consistency in VSOD predictions. Extensive experiments on six SOD and three VSOD datasets highlight the superior accuracy-runtime trade-offs that SDNet and STDNet achieve.
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/18327074/225656444-3d51e41f-fd94-45fb-9d70-db7d1315b939.png"><br>
+<img src="https://user-images.githubusercontent.com/18327074/225656444-3d51e41f-fd94-45fb-9d70-db7d1315b939.png" width="80%"><br>
 </div>
 
 Coding style is based on [Pixel Difference Convolution](https://github.com/zhuoinoulu/pidinet).
@@ -46,7 +46,8 @@ mv ${ROOTDIR}/vsod/Easy-35 ${ROOTDIR}/vsod/DAVSOD_Test_Set_Easy_35
 
 ## Evaluation
 
-Checkpoints of trained models can be found in [checkpoints](checkpoints).
+- Checkpoints of trained models can be found in [checkpoints](checkpoints).
+- Saliency maps or our models can be downloaded at [saliency maps]().
 
 #### SOD (SDCNet w/o Imagenet pretraining)
 ```bash
