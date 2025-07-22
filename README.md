@@ -9,7 +9,7 @@ Salient object detection (SOD) and Video SOD (VSOD) have benefited from recent a
 
 Coding style is based on [Pixel Difference Convolution](https://github.com/zhuoinoulu/pidinet).
 
-## Environment
+## Environment (which we develop with)
 - Ubuntu 20.04 + cuda 11.7
 - RTX 3090 x 2
 - python 3.8, pytorch 1.12
