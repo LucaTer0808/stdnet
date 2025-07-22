@@ -43,7 +43,7 @@ parser.add_argument('--val-lst', type=str, default='dataset/val_video_lst.txt',
 parser.add_argument('--val-cut', type=float, default=0.25, 
         help='reduce number of val images for faster validation, >1.0 means no cut')
 
-parser.add_argument('--model', type=str, default='stdcnet', 
+parser.add_argument('--model', type=str, default='stdnet', 
         help='model to train the dataset')
 parser.add_argument('--nframes', type=int, default=8, 
         help='number of frames in each input clip')
@@ -59,7 +59,7 @@ parser.add_argument('--beta', default=None, nargs="+",
         help='beta on negative annotations')
 parser.add_argument('--nobn', action='store_true',
         help='use bn in backbone')
-parser.add_argument('--config', type=str, default='sdcnet', 
+parser.add_argument('--config', type=str, default='sdnet', 
         help='model configurations, please refer to models/config.py for possible configurations')
 parser.add_argument('--seed', type=int, default=None, 
         help='random seed (default: None)')

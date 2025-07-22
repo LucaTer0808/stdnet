@@ -24,7 +24,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 
-parser = argparse.ArgumentParser(description='Generate sal maps by STDCNet')
+parser = argparse.ArgumentParser(description='Generate sal maps by STDNet')
 
 parser.add_argument('--savedir', type=str, default='results/savedir', 
         help='path to save result and checkpoint')
@@ -35,7 +35,7 @@ parser.add_argument('--test-lst', type=str, default='dataset/test_video_lst.txt'
 parser.add_argument('--testdata', type=str, default='DAVIS', 
         help='name of validation dataset')
 
-parser.add_argument('--model', type=str, default='stdcnet', 
+parser.add_argument('--model', type=str, default='stdnet', 
         help='model to train the dataset')
 parser.add_argument('--nobn', action='store_true',
         help='whether use bn in backbone')
@@ -47,7 +47,7 @@ parser.add_argument('--scales', nargs='+', default=[1],
         help='scaling factors for temporal operations')
 parser.add_argument('--framegap', type=int, default=4, 
         help='gap between two frames in the input')
-parser.add_argument('--train-config', type=str, default='sdcnet', 
+parser.add_argument('--train-config', type=str, default='sdnet', 
         help='model configurations during training, please refer to models/config.py for possible configurations')
 parser.add_argument('--inference-config', type=str, default='baseline', 
         help='model configurations during inference, please refer to models/config.py for possible configurations')

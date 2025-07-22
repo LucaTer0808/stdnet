@@ -24,7 +24,7 @@ import torch.backends.cudnn as cudnn
 
 parser = argparse.ArgumentParser(description='Speed of VSOD models')
 
-parser.add_argument('--model', type=str, default='stdcnet', 
+parser.add_argument('--model', type=str, default='stdnet', 
         help='model to train the dataset')
 parser.add_argument('--nframes', type=int, default=8, 
         help='number of frames in each input clip')

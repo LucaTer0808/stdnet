@@ -1,5 +1,5 @@
 """
-STDCNet-A
+STDNet
 
 Author: Zhuo Su
 Date: March 16, 2023
@@ -23,13 +23,11 @@ from .std_utils import (
         InitialBlock,
         DiffBlock,
     )
-from .attention_block import MobileVitV2Block
 from .ops import createConvFunc
 
-
-class STDCNetA(nn.Module):
+class STDNet(nn.Module):
     def __init__(self, diffconvs, tid, scales, inplane=60, dil=24, nframes=1, nstdc=1, bn=False, kernel_size=3):
-        super(STDCNetA, self).__init__()
+        super(STDNet, self).__init__()
         assert isinstance(dil, int), 'dil should be an int'
         self.dil = dil
         self.nframes = nframes
@@ -51,32 +49,35 @@ class STDCNetA(nn.Module):
         self.inplane = self.inplane * 2
         self.block2_1 = DiffBlock(diffconvs[4], inplane, self.inplane, stride=2, bn=bn)
         self.block2_2 = DiffBlock(diffconvs[5], self.inplane, self.inplane, bn=bn)
-        self.block2_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 2)
+        self.block2_3 = DiffBlock(diffconvs[6], self.inplane, self.inplane, bn=bn)
+        self.block2_4 = DiffBlock(diffconvs[7], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
         self.fuseplanes.append(self.inplane) # 2N
         
         inplane = self.inplane
         self.inplane = self.inplane * 2
-        self.block3_1 = DiffBlock(diffconvs[6], inplane, self.inplane, stride=2, bn=bn)
-        self.block3_2 = DiffBlock(diffconvs[7], self.inplane, self.inplane, bn=bn)
-        self.block3_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 2)
+        self.block3_1 = DiffBlock(diffconvs[8], inplane, self.inplane, stride=2, bn=bn)
+        self.block3_2 = DiffBlock(diffconvs[9], self.inplane, self.inplane, bn=bn)
+        self.block3_3 = DiffBlock(diffconvs[10], self.inplane, self.inplane, bn=bn)
+        self.block3_4 = DiffBlock(diffconvs[11], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
         self.fuseplanes.append(self.inplane) # 4N
 
-        self.block4_1 = DiffBlock(diffconvs[8], self.inplane, self.inplane, stride=2, bn=bn)
-        self.block4_2 = DiffBlock(diffconvs[9], self.inplane, self.inplane, bn=bn)
-        self.block4_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 1)
+        self.block4_1 = DiffBlock(diffconvs[12], self.inplane, self.inplane, stride=2, bn=bn)
+        self.block4_2 = DiffBlock(diffconvs[13], self.inplane, self.inplane, bn=bn)
+        self.block4_3 = DiffBlock(diffconvs[14], self.inplane, self.inplane, bn=bn)
+        self.block4_4 = DiffBlock(diffconvs[15], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
         self.fuseplanes.append(self.inplane) # 4N
 
         self.project1 = nn.ModuleList()
         self.global_spatial = nn.ModuleList()
-        self.global_temporal = nn.ModuleList() if nframes > 1 else None
+        self.global_temporal = nn.ModuleList() if self.nframes > 1 else None
         self.project2 = nn.ModuleList()
         self.attention = nn.ModuleList()
 
         for inplane, outplane in zip(self.fuseplanes, [dil, dil, dil, 2 * dil]):
             self.project1.append(ProjectLayer(inplane, outplane))
             self.global_spatial.append(CDCM(2 * dil, dil))
-            if nframes > 1:
-                self.global_temporal.append(STDM(2 * dil, dil, nframes, tid, scales, nstdc, bn=bn))
+            if self.nframes > 1:
+                self.global_temporal.append(STDM(2 * dil, dil, self.nframes, tid, scales, nstdc, bn=bn))
             self.project2.append(ProjectLayer(2 * dil, dil, relu=False))
             self.attention.append(CSAM(self.dil))
         self.project_final = ProjectLayer(self.dil, 1, relu=False, bn=False)
@@ -89,13 +90,26 @@ class STDCNetA(nn.Module):
         for pname, p in self.named_parameters():
             if 'scales' in pname:
                 scale_weights.append(p)
-            elif 'bn' in pname:
+            elif 'norm' in pname or 'bn' in pname:
                 bn_weights.append(p)
             elif 'relu' in pname:
                 relu_weights.append(p)
             else:
                 conv_weights.append(p)
         return conv_weights, bn_weights, relu_weights, scale_weights
+
+    def get_normal_weights(self):
+        conv_weights = []
+        bn_weights = []
+        relu_weights = []
+        for pname, p in self.named_parameters():
+            if 'norm' in pname or 'bn' in pname:
+                bn_weights.append(p)
+            elif 'relu' in pname:
+                relu_weights.append(p)
+            else:
+                conv_weights.append(p)
+        return conv_weights, bn_weights, relu_weights
 
     def get_stage2_weights(self):
         conv_weights = []
@@ -121,7 +135,7 @@ class STDCNetA(nn.Module):
 
     def forward(self, x):
         """
-        nframes=1: forward on images, not implemented
+        nframes=1: forward on images
         nframes>1: forward on video clip
         """
         b, _, h, w = x.size() # batchsize, nframes * 3, h, w
@@ -139,19 +153,22 @@ class STDCNetA(nn.Module):
         x2 = self.block2_1(x1)
         x2 = self.block2_2(x2)
         x2 = self.block2_3(x2)
+        x2 = self.block2_4(x2)
 
         x3 = self.block3_1(x2)
         x3 = self.block3_2(x3)
         x3 = self.block3_3(x3)
+        x3 = self.block3_4(x3)
 
         x4 = self.block4_1(x3)
         x4 = self.block4_2(x4)
         x4 = self.block4_3(x4)
+        x4 = self.block4_4(x4)
 
         x_pre = None
         for _i, xi in enumerate([x4, x3, x2, x1]):
             i = 3 - _i
-            xi = self.project1[i](xi) # dil (for i = 0, 1, 2) or 2*dil (for i = 3)
+            xi = self.project1[i](xi) # dil (1, 2, 3) or 2*dil (4)
             if x_pre is not None:
                 x_pre = F.interpolate(x_pre, xi.shape[2:], mode="bilinear", align_corners=False)
                 xi = torch.cat([xi, x_pre], dim=1) # 2*dil
@@ -169,13 +186,9 @@ class STDCNetA(nn.Module):
         output = torch.sigmoid(output)
         return output
 
-
-def stdcneta(args):
-    """
-    tid: temporal ops like cv, cd, ad.
-    scales: scaling factors attached to ops.
-    """
+def stdnet(args):
     diffconvs = config_model(args.config)
     nframes = args.nframes if hasattr(args, 'nframes') else 1
     kernel_size = 5 if args.config == 'baseline' else 3 # to reparameterize RPDC
-    return STDCNetA(diffconvs, tid=args.tid, scales=args.scales, nframes=nframes, bn=args.bn, kernel_size=kernel_size)
+    return STDNet(diffconvs, tid=args.tid, scales=args.scales, nframes=nframes, bn=args.bn, kernel_size=kernel_size)
+

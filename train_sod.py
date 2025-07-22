@@ -31,7 +31,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 
-parser = argparse.ArgumentParser(description='Train SDCNet')
+parser = argparse.ArgumentParser(description='Train SDNet')
 
 parser.add_argument('--savedir', type=str, default='results/savedir', 
         help='path to save result and checkpoint')
@@ -42,11 +42,11 @@ parser.add_argument('--traindata', type=str, default='DUTS-TR',
 parser.add_argument('--valdata', type=str, default='SOD', 
         help='name of validation dataset, not necessary, as we take the final checkpoint after training')
 
-parser.add_argument('--model', type=str, default='sdcnet', 
+parser.add_argument('--model', type=str, default='sdnet', 
         help='model to train the dataset')
 parser.add_argument('--bn', action='store_true',
         help='use bn in backbone')
-parser.add_argument('--config', type=str, default='sdcnet', 
+parser.add_argument('--config', type=str, default='sdnet', 
         help='model configurations, please refer to models/config.py for possible configurations')
 parser.add_argument('--seed', type=int, default=None, 
         help='random seed (default: None)')

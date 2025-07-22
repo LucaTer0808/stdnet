@@ -4,8 +4,8 @@ Date: March 16, 2023
 """
 
 
-from .sdcnet import sdcnet
-from .sdcnet_a import sdcneta
+from .sdnet import sdnet
+from .sdnet_a import sdneta
 
-from .stdcnet import stdcnet
-from .stdcnet_a import stdcneta
+from .stdnet import stdnet
+from .stdnet_a import stdneta

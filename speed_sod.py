@@ -25,7 +25,7 @@ import torch.backends.cudnn as cudnn
 
 parser = argparse.ArgumentParser(description='Speed of SOD models')
 
-parser.add_argument('--model', type=str, default='sdcnet', 
+parser.add_argument('--model', type=str, default='sdnet', 
         help='model to train the dataset')
 parser.add_argument('--config', type=str, default='baseline', 
         help='model configurations, please refer to models/config.py for possible configurations')

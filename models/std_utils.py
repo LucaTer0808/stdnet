@@ -1,5 +1,5 @@
 """
-Modules of SDCNet/SDCNet-A/STDCNet/STDCNet-A
+Modules of SDNet/SDNet-A/STDNet/STDNet-A
 
 Author: Zhuo Su
 Date: March 16, 2023

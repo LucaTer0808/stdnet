@@ -1,7 +1,7 @@
 # Saptial and Temporal Difference Network for Real-time salient object detection
 
 ## Introduction
-Salient object detection (SOD) and Video SOD (VSOD) have benefited from recent advances in deep convolutional neural networks (CNNs). However, top-performing large-scale models require considerable computational cost, making it hard to deploy them on resource-constrained devices. In this paper, we present SDCNet and STDCNet, lightweight architectures for SOD and VSOD that achieve state-of-the-art results with real-time inference speeds on embedded devices. SDCNet leverages pixel difference convolutions (PDC) to enrich the feature representation with image gradient information. Our proposed difference convolution reparameterization (DCR) strategy is effective in capturing the effect of multiple PDC operators at the computational cost of a single convolutional operator with no additional parameters. We additionally propose a novel spatiotemporal difference convolution (STDC) to complement standard 3D convolutions used for VSOD. STDCs similarly benefit from DCR and enable our resulting STDCNet to achieve high temporal consistency in VSOD predictions. Extensive experiments on six SOD and three VSOD datasets highlight the superior accuracy-runtime trade-offs that SDCNet and STDCNet achieve.
+Salient object detection (SOD) and Video SOD (VSOD) have benefited from recent advances in deep convolutional neural networks (CNNs). However, top-performing large-scale models require considerable computational cost, making it hard to deploy them on resource-constrained devices. In this paper, we present SDNet and STDNet, lightweight architectures for SOD and VSOD that achieve state-of-the-art results with real-time inference speeds on embedded devices. SDNet leverages pixel difference convolutions (PDC) to enrich the feature representation with image gradient information. Our proposed difference convolution reparameterization (DCR) strategy is effective in capturing the effect of multiple PDC operators at the computational cost of a single convolutional operator with no additional parameters. We additionally propose a novel spatiotemporal difference convolution (STDC) to complement standard 3D convolutions used for VSOD. STDCs similarly benefit from DCR and enable our resulting STDNet to achieve high temporal consistency in VSOD predictions. Extensive experiments on six SOD and three VSOD datasets highlight the superior accuracy-runtime trade-offs that SDNet and STDNet achieve.
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/18327074/225762927-bbb3de74-2287-4db3-b143-61d2538a0f0d.png" width="80%"><br>
@@ -49,18 +49,18 @@ mv ${ROOTDIR}/vsod/Easy-35 ${ROOTDIR}/vsod/DAVSOD_Test_Set_Easy_35
 - Checkpoints of trained models can be found in [checkpoints](checkpoints).
 - Saliency maps or our models can be downloaded at [saliency maps](https://github.com/isl-org/stdc-net/releases/download/v1.0/saliencyMaps.zip).
 
-#### SOD (SDCNet w/o Imagenet pretraining)
+#### SOD (SDNet w/o Imagenet pretraining)
 ```bash
 ROOTDIR=/to/rootdir
 testdata='ECSSD+PASCAL-S+SOD+DUT-O+HKU-IS+DUTS-TE'
 #testdata='ECSSD' # if you want to evaluate on only a single dataset
 size=320
-exp='sdcnet_from_scratch'
+exp='sdnet_from_scratch'
 
 # Difference Convolution Reparameterization (DCR) first,
 # generating saliency maps second,
 
-python generate_salmaps_sod.py --model sdcnet --inference-config baseline --train-config sdcnet -j 4 --gpu 0 --datadir ${ROOTDIR}/sod --testdata ${testdata} --savedir results/$exp --evaluate checkpoints/${exp}.pth --size ${size}
+python generate_salmaps_sod.py --model sdnet --inference-config baseline --train-config sdnet -j 4 --gpu 0 --datadir ${ROOTDIR}/sod --testdata ${testdata} --savedir results/$exp --evaluate checkpoints/${exp}.pth --size ${size}
 
 # calcualting metrics finally.
 
@@ -68,18 +68,18 @@ cd Evaluation
 bash eval_sod.sh ${testdata} ${exp} ${ROOTDIR}/sod
 ```
 
-#### SOD (SDCNet-A w/ Imagenet pretraining)
+#### SOD (SDNet-A w/ Imagenet pretraining)
 ```bash
 ROOTDIR=/to/rootdir
 testdata='ECSSD+PASCAL-S+SOD+DUT-O+HKU-IS+DUTS-TE'
 #testdata='ECSSD' # if you want to evaluate on only a single dataset
 size=384
-exp='sdcneta_from_pretrained'
+exp='sdneta_from_pretrained'
 
 # Difference Convolution Reparameterization (DCR) first,
 # generating saliency maps second,
 
-python generate_salmaps_sod.py --model sdcneta --bn --inference-config baseline --train-config sdcnet-a -j 4 --gpu 0 --datadir ${ROOTDIR}/sod --testdata ${testdata} --savedir results/$exp --evaluate checkpoints/${exp}.pth --size ${size}
+python generate_salmaps_sod.py --model sdneta --bn --inference-config baseline --train-config sdnet-a -j 4 --gpu 0 --datadir ${ROOTDIR}/sod --testdata ${testdata} --savedir results/$exp --evaluate checkpoints/${exp}.pth --size ${size}
 
 # calcualting metrics finally.
 
@@ -87,21 +87,21 @@ cd Evaluation
 bash eval_sod.sh ${testdata} ${exp} ${ROOTDIR}/sod
 ```
 
-#### VSOD (STDCNet w/o Imagenet pretraining)
+#### VSOD (STDNet w/o Imagenet pretraining)
 ```bash
 ROOTDIR=/to/rootdir
 testdata='DAVSOD'
 #testdata='VOS'
 #testdata='DAVIS'
 size=256
-exp='stdcnet_from_scratch'
+exp='stdnet_from_scratch'
 pos=_${testdata}
 tid='cv cd ad'
 
 # Difference Convolution Reparameterization (DCR) first,
 # generating saliency maps second,
 
-python generate_salmaps_vsod.py --model stdcnet --inference-config baseline --train-config sdcnet -j 4 --gpu 0 --datadir ${ROOTDIR} --testdata ${testdata} --savedir results/$exp --size $size --evaluate checkpoints/${exp}${pos}.pth --tid ${tid}
+python generate_salmaps_vsod.py --model stdnet --inference-config baseline --train-config sdnet -j 4 --gpu 0 --datadir ${ROOTDIR} --testdata ${testdata} --savedir results/$exp --size $size --evaluate checkpoints/${exp}${pos}.pth --tid ${tid}
 
 # calcualting metrics finally.
 
@@ -109,21 +109,21 @@ cd Evaluation
 bash eval_vsod.sh ${testdata} ${exp} ${ROOTDIR}
 ```
 
-#### VSOD (STDCNet-A w/ Imagenet pretraining)
+#### VSOD (STDNet-A w/ Imagenet pretraining)
 ```bash
 ROOTDIR=/to/rootdir
 testdata='DAVSOD'
 #testdata='VOS'
 #testdata='DAVIS'
 size=256
-exp='stdcneta_from_pretrained'
+exp='stdneta_from_pretrained'
 pos=_${testdata}
 tid='cv cd ad'
 
 # Difference Convolution Reparameterization (DCR) first,
 # generating saliency maps second,
 
-python generate_salmaps_vsod.py --model stdcneta --inference-config baseline --train-config sdcnet-a -j 4 --gpu 0 --datadir ${ROOTDIR} --testdata ${testdata} --savedir results/$exp --size $size --evaluate checkpoints/${exp}${pos}.pth --tid ${tid}
+python generate_salmaps_vsod.py --model stdneta --inference-config baseline --train-config sdnet-a -j 4 --gpu 0 --datadir ${ROOTDIR} --testdata ${testdata} --savedir results/$exp --size $size --evaluate checkpoints/${exp}${pos}.pth --tid ${tid}
 
 # calcualting metrics finally.
 
@@ -140,38 +140,38 @@ Note: For calculating metrics for VSOD models, the [matlab evaluation tool](http
 ```bash
 ROOTDIR=/to/rootdir
 
-# Train SDCNet, w/o ImageNet pretraining
-python train_sod.py --model sdcnet --config sdcnet --resume --gpu 0,1 --datadir ${ROOTDIR}/sod --savedir results/exp1
+# Train SDNet, w/o ImageNet pretraining
+python train_sod.py --model sdnet --config sdnet --resume --gpu 0,1 --datadir ${ROOTDIR}/sod --savedir results/exp1
 
-# Train SDCNetA, w/ ImageNet pretraining
-python train_sod.py --model sdcneta --config sdcnet-a --resume --gpu 0,1 --datadir ${ROOTDIR}/sod --preload checkpoints/sdcneta_imagenet_pretrained_backbone.pth --savedir results/exp2
+# Train SDNetA, w/ ImageNet pretraining
+python train_sod.py --model sdneta --config sdnet-a --resume --gpu 0,1 --datadir ${ROOTDIR}/sod --preload checkpoints/sdneta_imagenet_pretrained_backbone.pth --savedir results/exp2
 
-# Train STDCNet-A with suitable hyperparameters for DAVSOD, w/ ImageNet pretraining
-python train_vsod.py --model stdcneta --config sdcnet-a --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.01 --preload checkpoints/sdcneta_imagenet_pretrained_backbone.pth --savedir results/exp3
+# Train STDNet-A with suitable hyperparameters for DAVSOD, w/ ImageNet pretraining
+python train_vsod.py --model stdneta --config sdnet-a --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.01 --preload checkpoints/sdneta_imagenet_pretrained_backbone.pth --savedir results/exp3
 
-# Train STDCNet-A with suitable hyperparameters for VOS/DAVIS, w/ ImageNet pretraining
-python train_vsod.py --model stdcneta --config sdcnet-a --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.1 --preload checkpoints/sdcneta_imagenet_pretrained_backbone.pth --savedir results/exp4
+# Train STDNet-A with suitable hyperparameters for VOS/DAVIS, w/ ImageNet pretraining
+python train_vsod.py --model stdneta --config sdnet-a --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.1 --preload checkpoints/sdneta_imagenet_pretrained_backbone.pth --savedir results/exp4
 
-# Train STDCNet with suitable hyperparameters for DAVSOD, w/o ImageNet pretraining (here, lr_reduce is 0.1, stage1 backbone can be obtained from SDCNet trained on DUTS-TR)
-python train_vsod.py --model stdcnet --config sdcnet --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.1 --preload checkpoints/sdcnet_stage1_backbone.pth --savedir results/exp5
+# Train STDNet with suitable hyperparameters for DAVSOD, w/o ImageNet pretraining (here, lr_reduce is 0.1, stage1 backbone can be obtained from SDNet trained on DUTS-TR)
+python train_vsod.py --model stdnet --config sdnet --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.1 --preload checkpoints/sdnet_stage1_backbone.pth --savedir results/exp5
 
-# Train STDCNet with suitable hyperparameters for VOS/DAVIS, w/o ImageNet pretraining (here, lr_reduce is 0.01, stage1 backbone can be obtained from SDCNet trained on DUTS-TR)
-python train_vsod.py --model stdcnet --config sdcnet --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.01 --preload checkpoints/sdcnet_stage1_backbone.pth --savedir results/exp6
+# Train STDNet with suitable hyperparameters for VOS/DAVIS, w/o ImageNet pretraining (here, lr_reduce is 0.01, stage1 backbone can be obtained from SDNet trained on DUTS-TR)
+python train_vsod.py --model stdnet --config sdnet --resume --gpu 0,1 --datadir ${ROOTDIR} --lr-reduce 0.01 --preload checkpoints/sdnet_stage1_backbone.pth --savedir results/exp6
 ```
 
 ## Testing FPS
 
 ```bash
-## Test speed of SDCNet, SDCNet-A
+## Test speed of SDNet, SDNet-A
 shape=320
-python speed_sod.py --model sdcnet --config baseline -j 1 --gpu 0 --size $shape
-python speed_sod.py --model sdcneta --config baseline -j 1 --gpu 0 --size $shape
+python speed_sod.py --model sdnet --config baseline -j 1 --gpu 0 --size $shape
+python speed_sod.py --model sdneta --config baseline -j 1 --gpu 0 --size $shape
 
 
-## Test speed of STDCNet, STDCNet-A
+## Test speed of STDNet, STDNet-A
 shape=256
-python speed_vsod.py --model stdcnet --config baseline -j 1 --gpu 0 --size $shape
-python speed_vsod.py --model stdcneta --config baseline -j 1 --gpu 0 --size $shape
+python speed_vsod.py --model stdnet --config baseline -j 1 --gpu 0 --size $shape
+python speed_vsod.py --model stdneta --config baseline -j 1 --gpu 0 --size $shape
 ```
 
 ## Acknowledgement

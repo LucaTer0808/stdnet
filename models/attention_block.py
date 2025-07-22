@@ -1,5 +1,5 @@
 """
-Attention blocks used in SDCNet/STDCNet backbones
+Attention blocks used in SDNet/STDNet backbones
 Modules from MobileVitv2, 
 code modified from timm: "https://github.com/huggingface/pytorch-image-models".
 

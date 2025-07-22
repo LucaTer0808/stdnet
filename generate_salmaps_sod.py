@@ -26,7 +26,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 
-parser = argparse.ArgumentParser(description='Generate sal maps by SDCNet')
+parser = argparse.ArgumentParser(description='Generate sal maps by SDNet')
 
 parser.add_argument('--savedir', type=str, default='results/savedir', 
         help='path to save result and checkpoint')
@@ -37,11 +37,11 @@ parser.add_argument('--testdata', type=str, default='ECSSD',
 parser.add_argument('--evaluate', type=str, default=None, 
         help="full path to checkpoint to be evaluated or 'best'")
 
-parser.add_argument('--model', type=str, default='sdcnet', 
+parser.add_argument('--model', type=str, default='sdnet', 
         help='model to train the dataset')
 parser.add_argument('--bn', action='store_true',
         help='whether use bn in backbone')
-parser.add_argument('--train-config', type=str, default='sdcnet', 
+parser.add_argument('--train-config', type=str, default='sdnet', 
         help='model configurations during training, please refer to models/config.py for possible configurations')
 parser.add_argument('--inference-config', type=str, default='baseline', 
         help='model configurations during inference, please refer to models/config.py for possible configurations')

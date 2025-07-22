@@ -26,7 +26,7 @@ backbones = {
         'layer14': 'cv',
         'layer15': 'cv',
         },
-    'sdcnet': {
+    'sdnet': {
         'layer0':  ['cv', 'cd', 'ad'],
         'layer1':  ['cv', 'cd', 'ad'],
         'layer2':  ['cv', 'cd', 'ad'],
@@ -44,7 +44,7 @@ backbones = {
         'layer14': ['cv', 'cd', 'ad'],
         'layer15': ['cv', 'cd', 'ad', 'rd'],
         },
-    'sdcnet-a': {
+    'sdnet-a': {
         'layer0':  ['cv', 'cd', 'ad'],
         'layer1':  ['cv', 'cd', 'ad'],
         'layer2':  ['cv', 'cd', 'ad'],

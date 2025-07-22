@@ -1,13 +1,9 @@
 """
-SDCNet
+SDNet-A
 
 Author: Zhuo Su
 Date: March 16, 2023
 """
-
-import math
-import re
-import numpy as np
 
 import torch
 import torch.nn as nn
@@ -16,13 +12,13 @@ import torch.nn.functional as F
 from .std_utils import Conv2d, CSAM, InitialBlock, DiffBlock
 from .ops import createConvFunc
 from .config import config_model
-
+from .attention_block import MobileVitV2Block
 
 class CDCM(nn.Module):
     """
-    SDCNet uses a slightly different version of CDCM compared with STDCNet, so we define it here separately
+    SDNet uses a slightly different version of CDCM, so we define it here separately
     """
-    def __init__(self, in_channels, out_channels, dils):
+    def __init__(self, in_channels, out_channels, dils=[5, 7, 9, 11]):
         super(CDCM, self).__init__()
         #print('dilation size: %s' % str(dils))
 
@@ -58,9 +54,9 @@ class RefineLayer(nn.Module):
         return self.conv(x)
 
 
-class SDCNet(nn.Module):
+class SDNetA(nn.Module):
     def __init__(self, diffconvs, inplane=60, dil=24, bn=False, kernel_size=3):
-        super(SDCNet, self).__init__()
+        super(SDNetA, self).__init__()
         self.fuseplanes = []
 
         self.dil = dil
@@ -79,22 +75,19 @@ class SDCNet(nn.Module):
         self.inplane = self.inplane * 2
         self.block2_1 = DiffBlock(diffconvs[4], inplane, self.inplane, stride=2, bn=bn)
         self.block2_2 = DiffBlock(diffconvs[5], self.inplane, self.inplane, bn=bn)
-        self.block2_3 = DiffBlock(diffconvs[6], self.inplane, self.inplane, bn=bn)
-        self.block2_4 = DiffBlock(diffconvs[7], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
+        self.block2_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 2)
         self.fuseplanes.append(self.inplane) # 2N
         
         inplane = self.inplane
         self.inplane = self.inplane * 2
-        self.block3_1 = DiffBlock(diffconvs[8], inplane, self.inplane, stride=2, bn=bn)
-        self.block3_2 = DiffBlock(diffconvs[9], self.inplane, self.inplane, bn=bn)
-        self.block3_3 = DiffBlock(diffconvs[10], self.inplane, self.inplane, bn=bn)
-        self.block3_4 = DiffBlock(diffconvs[11], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
+        self.block3_1 = DiffBlock(diffconvs[6], inplane, self.inplane, stride=2, bn=bn)
+        self.block3_2 = DiffBlock(diffconvs[7], self.inplane, self.inplane, bn=bn)
+        self.block3_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 2)
         self.fuseplanes.append(self.inplane) # 4N
 
-        self.block4_1 = DiffBlock(diffconvs[12], self.inplane, self.inplane, stride=2, bn=bn)
-        self.block4_2 = DiffBlock(diffconvs[13], self.inplane, self.inplane, bn=bn)
-        self.block4_3 = DiffBlock(diffconvs[14], self.inplane, self.inplane, bn=bn)
-        self.block4_4 = DiffBlock(diffconvs[15], self.inplane, self.inplane, bn=bn, kernel_size=kernel_size)
+        self.block4_1 = DiffBlock(diffconvs[8], self.inplane, self.inplane, stride=2, bn=bn)
+        self.block4_2 = DiffBlock(diffconvs[9], self.inplane, self.inplane, bn=bn)
+        self.block4_3 = MobileVitV2Block(self.inplane, self.inplane, 2, 1)
         self.fuseplanes.append(self.inplane) # 4N
 
         dils_list = [
@@ -153,17 +146,14 @@ class SDCNet(nn.Module):
         x2 = self.block2_1(x1)
         x2 = self.block2_2(x2)
         x2 = self.block2_3(x2)
-        x2 = self.block2_4(x2)
 
         x3 = self.block3_1(x2)
         x3 = self.block3_2(x3)
         x3 = self.block3_3(x3)
-        x3 = self.block3_4(x3)
 
         x4 = self.block4_1(x3)
         x4 = self.block4_2(x4)
         x4 = self.block4_3(x4)
-        x4 = self.block4_4(x4)
 
         x_fuses = []
         for i, xi in enumerate([x1, x2, x3, x4]):
@@ -184,8 +174,7 @@ class SDCNet(nn.Module):
         return output
 
 
-def sdcnet(args):
+def sdneta(args):
     diffconvs = config_model(args.config)
     kernel_size = 5 if args.config == 'baseline' else 3 # to reparameterize RPDC
-    return SDCNet(diffconvs, bn=args.bn, kernel_size=kernel_size)
-
+    return SDNetA(diffconvs, bn=args.bn, kernel_size=kernel_size)
