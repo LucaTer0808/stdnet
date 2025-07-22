@@ -4,7 +4,7 @@
 This paper addresses the challenge of deploying salient object detection (SOD) on resource-constrained devices with real-time performance. While recent advances in deep neural networks have improved SOD, existing top-leading models are computationally expensive. We propose an efficient network design that combines traditional wisdom on SOD and the representation power of modern CNNs. Like biologically-inspired classical SOD methods relying on computing contrast cues to determine saliency of image regions, our model leverages Pixel Difference Convolutions (PDCs) to encode the feature contrasts. Differently, PDCs are incorporated in a CNN architecture so that the valuable contrast cues are extracted from rich feature maps. For efficiency, we introduce a difference convolution reparameterization (DCR) strategy that embeds PDCs into standard convolutions, eliminating computation and parameters at inference. Additionally, we introduce SpatioTemporal Difference Convolution (STDC) for video SOD, enhancing the standard 3D convolution with spatiotemporal contrast capture. Our models, SDNet for image SOD and STDNet for video SOD, achieve significant improvements in efficiency-accuracy trade-offs. On a Jetson Orin device, our models with < 1M parameters operate at 46 FPS and 150 FPS on streamed images and videos, surpassing the second-best lightweight models in our experiments by more than 2× and 3× in speed with superior accuracy.
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/18327074/225762927-bbb3de74-2287-4db3-b143-61d2538a0f0d.png" width="80%"><br>
+<img src="https://github.com/user-attachments/assets/8726815b-2b4f-4097-8c96-f16f88936351" width="80%"><br>
 </div>
 
 Coding style is based on [Pixel Difference Convolution](https://github.com/zhuoinoulu/pidinet).
@@ -183,3 +183,4 @@ Repositories by which the code writing is inspired:
 - [DAVSOD](https://github.com/DengPingFan/DAVSOD)
 
 Friendly colleagues at Intel Lab.
+
