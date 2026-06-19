@@ -9,6 +9,7 @@ import os
 import numpy as np
 from pathlib import Path
 from PIL import Image
+import shutil
 
 import torch
 import torch.nn.functional as F
@@ -73,7 +74,12 @@ def process_folder(model, device, source_dir, target_dir, img_size):
     
     src_path = Path(source_dir)
     tgt_path = Path(target_dir)
-    tgt_path.mkdir(parents=True, exist_ok=True)
+
+    if tgt_path.exists():
+	print(f"Zielordner existiert bereits. Wird vorher gelöscht")
+	shutil.rmtree(tgt_path)
+
+    tgt_path.mkdir(parents=True, exists_ok=False)
 
     # Erlaubte Bildendungen definieren (Groß-/Kleinschreibung wird ignoriert)
     valid_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.webp'}
