@@ -56,7 +56,7 @@ parser.add_argument('-j', '--workers', type=int, default=4,
 args = parser.parse_args()
 
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
+os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
 def main():
 
