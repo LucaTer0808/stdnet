@@ -51,10 +51,24 @@ def main():
     args.bn = False
     model_inference_time = getattr(models, args.model)(args).to(device)
 
-    ### 2. Gewichte laden
     print(f"=> Lade Checkpoint aus '{args.evaluate}'")
     checkpoint_dict = torch.load(args.evaluate, map_location=device)
-    model_training_time.load_state_dict(checkpoint_dict)
+
+    # Falls das state_dict direkt verschachtelt ist (oft der Fall)
+    if "state_dict" in checkpoint_dict:
+        state_dict = checkpoint_dict["state_dict"]
+    else:
+        state_dict = checkpoint_dict
+
+    # DDP/DataParallel "module."-Präfix entfernen, falls vorhanden
+    clean_state_dict = {}
+    for k, v in state_dict.items():
+        if k.startswith('module.'):
+            clean_state_dict[k[7:]] = v  # Schneidet die ersten 7 Zeichen ("module.") ab
+        else:
+            clean_state_dict[k] = v
+
+    model_training_time.load_state_dict(clean_state_dict)
 
     ### 3. Reparametrisierung (DCR)
     if hasattr(model_training_time, 'module'):
