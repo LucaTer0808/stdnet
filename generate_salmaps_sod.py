@@ -124,6 +124,9 @@ def test(model, args):
         else:
             print('%s already exits, but it will be regenerated' % img_dir)
 
+        start_time = time.time()
+        print("=== Start inference timer ===")
+
         for idx, (image, img_name, imgsize) in enumerate(test_loader):
 
             img_name = img_name[0]
@@ -143,6 +146,17 @@ def test(model, args):
             if idx % 100 == 0:
                 runinfo = "Running test [%d/%d]" % (idx + 1, len(test_loader))
                 print(runinfo)
+
+        end_time = time.time()
+        total_time = end_time - start_time
+        time_per_image = total_time / len(test_loader) if len(test_loader) > 0 else 0
+        print("=== Inference timer ends, total time is %.2f seconds ===" % total_time)
+
+        txt_path = os.path.join(img_dir, 'evaluate.txt')
+        with open(txt_path, 'w') as f:
+            f.write('Image processed: %d\n' % len(test_loader))
+            f.write('Total time: %.2f seconds\n' % total_time)
+            f.write('Time per image: %.4f seconds\n' % time_per_image)
 
 if __name__ == '__main__':
     os.makedirs(args.savedir, exist_ok=True)
