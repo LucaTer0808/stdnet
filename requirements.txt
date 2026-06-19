@@ -2,3 +2,7 @@ numpy
 Pillow
 scikit-image
 scipy
+typing_extensions
+python-dateutil
+pytz
+requests
