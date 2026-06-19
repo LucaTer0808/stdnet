@@ -75,9 +75,8 @@ def process_folder(model, device, source_dir, target_dir, img_size):
     src_path = Path(source_dir)
     tgt_path = Path(target_dir)
 
-    if tgt_path.exists():
-	    print(f"Zielordner existiert bereits. Wird vorher gelöscht")
-        shutil.rmtree(tgt_path)
+    shutil.rmtree(target_dir, ignore_errors=True)
+    Path(target_dir).mkdir(parents=True, exist_ok=False)
 
     tgt_path.mkdir(parents=True, exists_ok=False)
 
